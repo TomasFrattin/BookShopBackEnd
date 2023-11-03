@@ -5,7 +5,7 @@ const ACCEPTED_ORIGINS = [
   'http://localhost:1234',
   'http://localhost:5173',
   'http://localhost:5174',  
-  'https://movies.com',
+  'https://books.com',
 ]
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) => cors({

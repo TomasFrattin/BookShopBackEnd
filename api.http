@@ -1,33 +1,33 @@
-### Recuperar todas las películas
-GET http://localhost:1234/movies
+### Recuperar todos los libros
+GET http://localhost:1234/books
 
-### Recuperar una película por id
-GET http://localhost:1234/movies/a55b182c-7814-11ee-9321-309c23a2b865
+### Recuperar un libro por id
+GET http://localhost:1234/books/9b0220fc-7a85-11ee-83f-309c23a2b865
 
-### Recuperar todas las películas por un género
+### Recuperar todos los libros por un género
 GET https://bunbury-goanna-rnff.1.sg-1.fl0.io/movies?genre=ACTION
 
-### Crear una película con POST
-POST http://localhost:1234/movies
+### Crear un libro con POST
+POST http://localhost:1234/books
 Content-Type: application/json
 
 {
-  "title": "The Godfather",
-  "year": 1975,
-  "director": "Francis Ford Coppola",
-  "duration": 175,
-  "poster": "https://img.fruugo.com/product/4/49/14441494_max.jpg",
+  "title": "In the Woods",
+  "year": 2007,
+  "author": "Tana French",
+  "price": 11.50,
+  "image": "https://upload.wikimedia.org/wikipedia/en/3/3c/In_the_Woods_cover.jpg",
+  "rate": 4.1,
   "genre": [
-    "Crime",
-    "Drama"
+    "Mystery"
   ]
 }
 
-### Borrar una película
-DELETE http://localhost:1234/movies/1d12c431-7a73-11ee-8d3f-309c23a2b865
+### Borrar un libro
+DELETE http://localhost:1234/books/f96c45c8-7a8c-11ee-8d3f-309c23a2b865
 
-### Actualizar una película
-PATCH http://localhost:1234/movies/64d4da882f83563ab4f40632
+### Actualizar un libro
+PATCH http://localhost:1234/books/64d4da882f83563ab4f40632
 Content-Type: application/json
 
 {

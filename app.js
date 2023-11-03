@@ -1,5 +1,5 @@
 import express, { json } from 'express' // require -> commonJS
-import { moviesRouter } from './routes/movies.js'
+import { booksRouter } from './routes/books.js'
 import { corsMiddleware } from './middlewares/cors.js'
 import cors from 'cors'
 
@@ -29,7 +29,7 @@ revisar
 
 app.disable('x-powered-by')
 
-app.use('/movies', moviesRouter)
+app.use('/books', booksRouter)
 
 const PORT = process.env.PORT ?? 1234
 
