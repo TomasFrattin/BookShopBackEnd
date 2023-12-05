@@ -1,38 +1,19 @@
-import express, { json } from 'express' // require -> commonJS
-import { booksRouter } from './routes/books.js'
-import { corsMiddleware } from './middlewares/cors.js'
-import cors from 'cors'
+import express from 'express';
+import { booksRouter } from './routes/books.js';
+import { usersRouter } from './routes/users.js';
+import cors from 'cors';
 
-const app = express()
- 
-app.use(cors())
-app.use(express.json())
+const app = express();
 
+app.use(cors());
+app.use(express.json());
+app.disable('x-powered-by');
 
+app.use('/books', booksRouter);
+app.use('/users', usersRouter);
 
-/*
-revisar
-app.use(cors({
-  origin: 'http://localhost:5173', // Permite solicitudes desde esta dirección
-  methods: 'GET,POST,DELETE', // Métodos permitidos
-  credentials: true // Habilita el intercambio de credenciales (por ejemplo, cookies)
-}));
-
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173', 'http://localhost:5174');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  next();
-});
-revisar
-*/
-
-app.disable('x-powered-by')
-
-app.use('/books', booksRouter)
-
-const PORT = process.env.PORT ?? 1234
+const PORT = process.env.PORT ?? 1234;
 
 app.listen(PORT, () => {
-  console.log(`server listening on port http://localhost:${PORT}`)
-})
+  console.log(`Server listening on port http://localhost:${PORT}`);
+});

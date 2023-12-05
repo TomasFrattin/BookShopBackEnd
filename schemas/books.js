@@ -14,10 +14,6 @@ const bookSchema = z.object({
   }),
   genre: z.array(
     z.enum(['History', 'Horror', 'Mystery', 'Psychology', 'Religion', 'Romance', 'Sci-Fi', 'Self Help']),
-    {
-      required_error: 'Se necesita el ingreso de un género.',
-      invalid_type_error: 'El género ingresado no existe.'
-    }
   )
 })
 

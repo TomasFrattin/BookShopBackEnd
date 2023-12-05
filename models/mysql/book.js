@@ -7,7 +7,6 @@ const config = {
   password: 'root',
   database: 'bookshopdb'
 }
-
 const connection = await mysql.createConnection(config)
 
 export class BookModel {
@@ -92,7 +91,77 @@ export class BookModel {
     }
   }
 
-  static async update ({ id, input }) {
-    // Falta hacer
+  static async updatePrice({ id, input }) {
+    const { price } = input;
+  
+    try {
+      await connection.query(
+        `UPDATE book
+         SET price = ?
+         WHERE id = UUID_TO_BIN(?);`,
+        [price, id]
+      );
+    } catch (e) {
+      throw new Error('Error al actualizar el precio del libro');
+    }
+  
+    const [updatedBook] = await connection.query(
+      `SELECT title, year, author, price, image, rate, BIN_TO_UUID(id) id
+       FROM book WHERE id = UUID_TO_BIN(?);`,
+      [id]
+    );
+  
+    return updatedBook[0];
   }
+}
+
+export class UserModel {
+  static async createUser(username, password) {
+    try {
+      const [result] = await connection.query('INSERT INTO usuarios (nombre, password) VALUES (?, ?)', [username, password]);
+      return result.insertId; // Retorna el ID del usuario recién creado
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getAllUsers() {
+    try {
+      const [rows] = await connection.query('SELECT * FROM usuarios');
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getUserByName({username}) {
+    try {
+      const [users] = await connection.query(
+        'SELECT * FROM usuarios WHERE nombre = ?;',
+        [username]
+      );
+
+      // Retornar el primer usuario encontrado (debería ser único ya que se busca por nombre)
+      return users.length > 0 ? users[0] : null;
+    } catch (error) {
+      console.error('Error al obtener usuario por nombre:', error);
+      throw error;
+    }
+  }
+  
+  
+
+  static async deleteUser ({ id }) {
+    try {
+      await connection.query(
+        'DELETE FROM usuarios WHERE id = ?;',
+        [id]
+      );
+      return true;
+    } catch (error) {
+      console.error('Error al eliminar el registro:', error);
+      return false;
+    }
+  }
+  
 }
