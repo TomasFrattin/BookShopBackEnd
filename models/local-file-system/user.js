@@ -20,7 +20,7 @@ export class UserModel {
     };
 
     users.push(newUser);
-    await writeJSON('./users.json', users); // Guardar el estado actualizado
+    await writeJSON('./users.json', users);
 
     return newUser;
   }
@@ -30,7 +30,7 @@ export class UserModel {
     if (userIndex === -1) return false;
 
     users.splice(userIndex, 1);
-    await writeJSON('./users.json', users); // Guardar el estado actualizado
+    await writeJSON('./users.json', users);
 
     return true;
   }
@@ -44,7 +44,7 @@ export class UserModel {
       ...input
     };
 
-    await writeJSON('./users.json', users); // Guardar el estado actualizado
+    await writeJSON('./users.json', users);
 
     return users[userIndex];
   }

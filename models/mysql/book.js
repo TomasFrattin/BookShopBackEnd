@@ -119,7 +119,7 @@ export class UserModel {
   static async createUser(username, password) {
     try {
       const [result] = await connection.query('INSERT INTO usuarios (nombre, password) VALUES (?, ?)', [username, password]);
-      return result.insertId; // Retorna el ID del usuario recién creado
+      return result.insertId;
     } catch (error) {
       throw error;
     }
@@ -141,7 +141,7 @@ export class UserModel {
         [username]
       );
 
-      // Retornar el primer usuario encontrado (debería ser único ya que se busca por nombre)
+     
       return users.length > 0 ? users[0] : null;
     } catch (error) {
       console.error('Error al obtener usuario por nombre:', error);

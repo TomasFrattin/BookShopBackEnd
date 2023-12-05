@@ -1,4 +1,3 @@
-// users.js (controlador)
 import { UserModel } from '../models/mysql/book.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -46,7 +45,7 @@ static async getAllUsers(req, res) {
 
 static async getUserByName(req, res) {
   try {
-    const { username } = req.params; // Destructuración correcta de req.params
+    const { username } = req.params;
     const user = await UserModel.getUserByName({ username });
 
 
@@ -67,7 +66,7 @@ static async getUserByName(req, res) {
   };
 
   static async deleteUser(req, res) {
-    const { id } = req.params; // Si estás utilizando parámetros de ruta, asegúrate de extraer el ID correctamente
+    const { id } = req.params; 
     try {
       const deleted = await UserModel.deleteUser({ id });
 
@@ -87,22 +86,21 @@ static async getUserByName(req, res) {
 
     try {
       const { username, password } = req.body;
-      // Obtener el usuario de la base de datos (asumiendo que tienes un modelo User)
+ 
       const user = await UserModel.getUserByName({username});
-      console.log('Request Body:', req.body);
   
       if (!user) {
         return res.status(401).json({ error: 'Credenciales incorrectas' });
       }
   
-      // Verificar la contraseña
+
       const passwordMatch = await bcrypt.compare(password, user.password);
   
       if (!passwordMatch) {
         return res.status(401).json({ error: 'Credenciales incorrectas' });
       }
   
-      // Generar el token solo si la autenticación es exitosa
+
       const token = jwt.sign({
         username: user.nombre,
       }, process.env.SECRET_KEY || 'pepito123');
