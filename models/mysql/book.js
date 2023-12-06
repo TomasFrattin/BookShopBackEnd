@@ -91,8 +91,8 @@ export class BookModel {
     }
   }
 
-  static async updatePrice({ id, input }) {
-    const { price } = input;
+  static async updatePrice ({ id, input }) {
+    const { price } = input; 
   
     try {
       await connection.query(
@@ -113,12 +113,15 @@ export class BookModel {
   
     return updatedBook[0];
   }
+  
+
 }
 
 export class UserModel {
-  static async createUser(username, password) {
+  static async createUser({username, hashedPassword}) {
+    console.log(username, hashedPassword)
     try {
-      const [result] = await connection.query('INSERT INTO usuarios (nombre, password) VALUES (?, ?)', [username, password]);
+      const [result] = await connection.query('INSERT INTO usuarios (nombre, password) VALUES (?, ?)', [username, hashedPassword]);
       return result.insertId;
     } catch (error) {
       throw error;
@@ -141,7 +144,6 @@ export class UserModel {
         [username]
       );
 
-     
       return users.length > 0 ? users[0] : null;
     } catch (error) {
       console.error('Error al obtener usuario por nombre:', error);
@@ -149,7 +151,19 @@ export class UserModel {
     }
   }
   
-  
+  static async changePassword({ hashedPassword, username }) {
+    
+    console.log(hashedPassword, username)
+    
+    try {
+
+    await connection.query('UPDATE usuarios SET password = ? WHERE nombre = ?', [hashedPassword, username]);
+
+    } catch (error) {
+      console.error('Error al cambiar la contraseña:', error);
+      throw error;
+    }
+  }
 
   static async deleteUser ({ id }) {
     try {
@@ -163,5 +177,4 @@ export class UserModel {
       return false;
     }
   }
-  
 }

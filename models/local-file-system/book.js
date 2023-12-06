@@ -10,7 +10,6 @@ export class BookModel {
         book => book.genre.some(g => g.toLowerCase() === genre.toLowerCase())
       )
     }
-
     return books
   }
 
@@ -38,7 +37,7 @@ export class BookModel {
     return true
   }
 
-  static async update ({ id, input }) {
+  static async updatePrice ({ id, input }) {
     const bookIndex = books.findIndex(book => book.id === id)
     if (bookIndex === -1) return false
 
@@ -46,7 +45,6 @@ export class BookModel {
       ...books[bookIndex],
       ...input
     }
-
     return books[bookIndex]
   }
 }

@@ -8,7 +8,7 @@ usersRouter.post('/', UserController.createUser);
 usersRouter.get('/', UserController.getAllUsers);
 
 usersRouter.get('/:name', UserController.getUserByName);
-usersRouter.patch('/:name', UserController.updateUser);
+usersRouter.patch('/change-password', UserController.changePassword);
 usersRouter.delete('/:id', UserController.deleteUser);
 
 usersRouter.post('/login', UserController.loginUser)

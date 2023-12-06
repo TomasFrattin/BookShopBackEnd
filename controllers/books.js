@@ -40,17 +40,18 @@ export class BookController {
     return res.json({ message: 'Libro eliminado' })
   }
 
-  static async update (req, res) {
-    const result = validatePartialBook(req.body)
+  static async updatePrice (req, res) {
+  // const result = validatePartialBook(req.body)
+  const { id } = req.params;
+  const { input } = req.body;
 
-    if (!result.success) {
-      return res.status(400).json({ error: JSON.parse(result.error.message) })
+
+    try {
+      const updatedBook = await BookModel.updatePrice({ id, input });
+      return res.json(updatedBook);
+    } catch (error) {
+      console.error('Error al actualizar el precio del libro:', error);
+      return res.status(500).json({ error: 'Error interno del servidor' });
     }
-
-    const { id } = req.params
-
-    const updatedBook = await BookModel.update({ id, input: result.data })
-
-    return res.json(updatedBook)
   }
 }

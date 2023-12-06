@@ -7,7 +7,7 @@ booksRouter.get('/', BookController.getAll)
 booksRouter.post('/', BookController.create)
 
 booksRouter.get('/:id', BookController.getById)
-booksRouter.patch('/:id', BookController.update)
+booksRouter.patch('/:id', BookController.updatePrice)
 booksRouter.delete('/:id', BookController.delete)
 
 
