@@ -30,7 +30,6 @@ export class UserController {
     }
   }
   
-  
 
   static async getAllUsers(req, res) {
     try {
@@ -120,19 +119,17 @@ export class UserController {
     console.log('Current Password:', currentPassword);
     console.log('New Password:', newPassword);
 
+
     try {
-      // Encuentra al usuario en la base de datos
       const user = await UserModel.getUserByName({ username });
       console.log(user.password)
      
-      // Verifica la contraseña actual
       const passwordMatch = await bcrypt.compare(currentPassword, user.password);
 
       if (!passwordMatch) {
         return res.status(401).json({ error: 'La contraseña actual es incorrecta.' });
       }
 
-      // Actualiza la contraseña
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       user.password = hashedPassword;
 
