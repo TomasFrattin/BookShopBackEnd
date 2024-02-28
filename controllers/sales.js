@@ -1,35 +1,22 @@
-// salesController.js
-const mysql = require('mysql2/promise');
-const { connectionConfig } = require('./config'); // Configura esto según tu entorno
+import { SaleModel } from "../models/mysql/sale.js";
 
-async function addSaleToDatabase(saleData) {
-  try {
-    const connection = await mysql.createConnection(connectionConfig);
+export class SaleController {
+  static async getAll (req, res) {
+    const { genre } = req.query
+    const sales = await SaleModel.getAll({ genre })
+    res.json(sales)
+  }
 
-    // Insertar la venta en la base de datos
-    const [result] = await connection.query(
-      'INSERT INTO sales (firstName, lastName, phoneNumber, address, streetNumber, city, province, totalAmount) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [
-        saleData.firstName,
-        saleData.lastName,
-        saleData.phoneNumber,
-        saleData.address,
-        saleData.streetNumber,
-        saleData.city,
-        saleData.province,
-        saleData.totalAmount,
-      ]
-    );
+  static async createSale(req, res) {
+    console.log("paso 0");
 
-    connection.end(); // Cerrar la conexión después de la consulta
-
-    return result.insertId; // Retorna el ID de la venta insertada
-  } catch (error) {
-    console.error('Error al agregar venta a la base de datos:', error);
-    throw error;
+    try {
+      const input = req.body;
+      const result = await SaleModel.createSale({ input });
+      res.status(201).json(result);
+    } catch (error) {
+      console.error("Error en el controlador:", error);
+      res.status(500).json({ error: "Error al procesar la solicitud" });
+    }
   }
 }
-
-module.exports = {
-  addSaleToDatabase,
-};

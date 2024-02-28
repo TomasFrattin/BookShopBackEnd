@@ -52,5 +52,20 @@ GET http://localhost:1234/users
 ### Recuperar un usuario por nombre
 GET http://localhost:1234/users/tomas
 
-### Borrar un usuario
-DELETE http://localhost:1234/users/38
+
+### Recuperar todas las ventas
+GET http://localhost:1234/sales
+
+
+### Crea una venta
+POST http://localhost:1234/sales
+Content-Type: application/json
+
+{
+      "firstName":"tomas",
+      "lastName":"frattin",
+      "address":"españa",
+      "streetNumber":"123",
+      "city":"casilda",
+      "province":"santa fe"
+}

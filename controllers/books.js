@@ -16,6 +16,7 @@ export class BookController {
   }
 
   static async create (req, res) {
+    console.log("paso1");
     const result = validateBook(req.body)
 
     if (!result.success) {

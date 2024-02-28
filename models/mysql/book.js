@@ -45,6 +45,7 @@ export class BookModel {
   }
 
   static async create ({ input }) {
+    console.log("paso")
     const {
       genre: genreInput,
       title,
