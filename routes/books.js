@@ -9,7 +9,7 @@ booksRouter.post('/', BookController.create)
 booksRouter.get('/:id', BookController.getById)
 booksRouter.patch('/:id/updatePrice', BookController.updatePrice);
 booksRouter.patch('/:id/updateStock', BookController.updateStock);
-booksRouter.delete('/:id', BookController.delete)
+booksRouter.delete('/:id', BookController.deleteBook)
 
 
 

@@ -1,50 +1,50 @@
-import { randomUUID } from 'node:crypto'
-import { readJSON } from '../../utils.js'
+// import { randomUUID } from 'node:crypto'
+// import { readJSON } from '../../utils.js'
 
-const books = readJSON('./books.json')
+// const books = readJSON('./books.json')
 
-export class BookModel {
-  static async getAll ({ genre }) {
-    if (genre) {
-      return books.filter(
-        book => book.genre.some(g => g.toLowerCase() === genre.toLowerCase())
-      )
-    }
-    return books
-  }
+// export class BookModel {
+//   static async getAll ({ genre }) {
+//     if (genre) {
+//       return books.filter(
+//         book => book.genre.some(g => g.toLowerCase() === genre.toLowerCase())
+//       )
+//     }
+//     return books
+//   }
 
-  static async getById ({ id }) {
-    const book = books.find(book => book.id === id)
-    return book
-  }
+//   static async getById ({ id }) {
+//     const book = books.find(book => book.id === id)
+//     return book
+//   }
 
-  static async create ({ input }) {
-    const newBook = {
-      id: randomUUID(),
-      ...input
-    }
+//   static async create ({ input }) {
+//     const newBook = {
+//       id: randomUUID(),
+//       ...input
+//     }
 
-    books.push(newBook)
+//     books.push(newBook)
 
-    return newBook
-  }
+//     return newBook
+//   }
 
-  static async delete ({ id }) {
-    const bookIndex = books.findIndex(book => book.id === id)
-    if (bookIndex === -1) return false
+//   static async delete ({ id }) {
+//     const bookIndex = books.findIndex(book => book.id === id)
+//     if (bookIndex === -1) return false
 
-    books.splice(bookIndex, 1)
-    return true
-  }
+//     books.splice(bookIndex, 1)
+//     return true
+//   }
 
-  static async updatePrice ({ id, input }) {
-    const bookIndex = books.findIndex(book => book.id === id)
-    if (bookIndex === -1) return false
+//   static async updatePrice ({ id, input }) {
+//     const bookIndex = books.findIndex(book => book.id === id)
+//     if (bookIndex === -1) return false
 
-    books[bookIndex] = {
-      ...books[bookIndex],
-      ...input
-    }
-    return books[bookIndex]
-  }
-}
+//     books[bookIndex] = {
+//       ...books[bookIndex],
+//       ...input
+//     }
+//     return books[bookIndex]
+//   }
+// }
