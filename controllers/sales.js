@@ -1,15 +1,13 @@
 import { SaleModel } from "../models/mysql/sale.js";
 
 export class SaleController {
-  static async getAll (req, res) {
-    const { genre } = req.query
-    const sales = await SaleModel.getAll({ genre })
-    res.json(sales)
+  static async getAll(req, res) {
+    const { genre } = req.query;
+    const sales = await SaleModel.getAll({ genre });
+    res.json(sales);
   }
 
   static async createSale(req, res) {
-    console.log("paso 0");
-
     try {
       const input = req.body;
       const result = await SaleModel.createSale({ input });

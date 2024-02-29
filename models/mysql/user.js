@@ -11,7 +11,6 @@ const connection = await mysql.createConnection(config)
 
 export class UserModel{
     static async createUser({username, hashedPassword}) {
-      console.log(username, hashedPassword)
       try {
         const [result] = await connection.query('INSERT INTO usuarios (nombre, password) VALUES (?, ?)', [username, hashedPassword]);
         return result.insertId;
@@ -45,7 +44,6 @@ export class UserModel{
     
     static async changePassword({ hashedPassword, username }) {
       
-      console.log(hashedPassword, username)
       
       try {
   

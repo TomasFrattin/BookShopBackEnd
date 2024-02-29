@@ -27,12 +27,25 @@ Content-Type: application/json
 ### Borrar un libro
 DELETE http://localhost:1234/books/82380683-7e32-11ee-8382-309c23a2b865
 
-### Actualizar un libro
-PATCH http://localhost:1234/books/9b021b43-7a85-11ee-8d3f-309c23a2b865
+### Actualizar precio de un libro
+PATCH http://localhost:1234/books/83aacd94-7f04-11ee-984d-309c23a2b865
 Content-Type: application/json
 
 {
-  "price": 15
+  "input": {
+    "price": 20
+  }
+}
+
+
+###
+PATCH http://localhost:1234/books/83aacd94-7f04-11ee-984d-309c23a2b865
+Content-Type: application/json
+
+{
+  "input": {
+    "stock": 100
+  }
 }
 ### NO FUNCIONA DESDE ACA XQ HAY QUE OPTIMIZAR LA DESESTRUCTURACION
 
@@ -69,3 +82,4 @@ Content-Type: application/json
       "city":"casilda",
       "province":"santa fe"
 }
+
