@@ -10,35 +10,31 @@ const config = {
 const connection = await mysql.createConnection(config)
 
 export class BookModel {
-static async getAll ({ genre }) {
-  if(genre) {
-    const lowerCaseGenre = genre.toLowerCase()
+  static async getAll ({ genre }) {
+    if(genre) {
+      const lowerCaseGenre = genre.toLowerCase()
 
-    const [genres] = await connection.query(
-      'SELECT id, name FROM genre WHERE LOWER(name) = ?;', [lowerCaseGenre]
-    )
+      const [genres] = await connection.query(
+        'SELECT id, name FROM genre WHERE LOWER(name) = ?;', [lowerCaseGenre]
+      )
 
-    if (genres.length === 0) return []
+      if (genres.length === 0) return []
 
-    const [{ id }] = genres;
+      const [{ id }] = genres
 
+      return []
+    }
+   
+    
     const [books] = await connection.query(
-      'SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id FROM book WHERE genreId = ?;', [id]
-    );
-
-    return books;
+      'SELECT title, year, author, price, image, rate, BIN_TO_UUID(id) id FROM book;'
+    )
+    return books
   }
-  
-  const [books] = await connection.query(
-    'SELECT title, year, author, price, image, rate, stock,  BIN_TO_UUID(id) id FROM book;'
-  );
-  
-  return books;
-}
 
   static async getById ({ id }) {
     const [books] = await connection.query(
-      `SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id 
+      `SELECT title, year, author, price, image, rate, BIN_TO_UUID(id) id 
       FROM book WHERE id = UUID_TO_BIN(?);`,
       [id]
     )
@@ -56,8 +52,7 @@ static async getAll ({ genre }) {
       author,
       price,
       rate,
-      image,
-      stock
+      image
     } = input
 
     const [uuidResult] = await connection.query('SELECT UUID() uuid;')
@@ -65,17 +60,16 @@ static async getAll ({ genre }) {
 
     try {
       await connection.query(
-        `INSERT INTO book (id, title, year, author, price, image, rate, stock)
-          VALUES (UUID_TO_BIN("${uuid}"), ?, ?, ?, ?, ?, ?, ?);`,
-        [title, year, author, price, image, rate, stock]
+        `INSERT INTO book (id, title, year, author, price, image, rate)
+          VALUES (UUID_TO_BIN("${uuid}"), ?, ?, ?, ?, ?, ?);`,
+        [title, year, author, price, image, rate]
       )
-    } catch (error) {
-      console.error("Error al crear la venta:", error);
-      throw new Error("Error al crear la venta");
+    } catch (e) {
+      throw new Error('Error al crear el libro')
     }
 
     const [books] = await connection.query(
-      `SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id
+      `SELECT title, year, author, price, image, rate, BIN_TO_UUID(id) id
         FROM book WHERE id = UUID_TO_BIN(?);`,
       [uuid]
     )
@@ -83,6 +77,7 @@ static async getAll ({ genre }) {
     return books[0]
   }
   
+
   static async delete ({ id }) {
     try {
       await connection.query(
@@ -119,63 +114,67 @@ static async getAll ({ genre }) {
     return updatedBook[0];
   }
   
-  static async updateStock({ id, input }) {
-    const { stock } = input;
-    
-    try {
-      await connection.query(
-        `UPDATE book
-         SET stock = ?
-         WHERE id = UUID_TO_BIN(?);`,
-        [stock, id]
-      );
-    } catch (e) {
-      console.error('Error al actualizar el stock del libro:', e);
-      throw new Error('Error al actualizar el stock del libro');
-    }
-  
-    const [updatedBook] = await connection.query(
-      `SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id
-       FROM book WHERE id = UUID_TO_BIN(?);`,
-      [id]
-    );
-  
-    return updatedBook[0];
-  }
-  
-static async decreaseStock({ bookId, quantity }) {
-  try {
-    const [book] = await connection.query(
-      `SELECT stock FROM book WHERE id = UUID_TO_BIN(?);`,
-      [bookId]
-    );
 
-    if (book.length === 0) {
-      throw new Error('Libro no encontrado');
-    }
-
-    const currentStock = book[0].stock;
-
-    if (currentStock < quantity) {
-      throw new Error('No hay suficientes unidades disponibles en stock.');
-    }
-
-    await connection.query(
-      `UPDATE book SET stock = ? WHERE id = UUID_TO_BIN(?);`,
-      [currentStock - quantity, bookId]
-    );
-
-    const [updatedBook] = await connection.query(
-      `SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id
-       FROM book WHERE id = UUID_TO_BIN(?);`,
-      [bookId]
-    );
-
-    return updatedBook[0];
-  } catch (e) {
-    throw new Error(`Error al actualizar el stock del libro: ${e.message}`);
-  }
 }
 
+export class UserModel {
+  static async createUser({username, hashedPassword}) {
+    console.log(username, hashedPassword)
+    try {
+      const [result] = await connection.query('INSERT INTO usuarios (nombre, password) VALUES (?, ?)', [username, hashedPassword]);
+      return result.insertId;
+    } catch (error) {
+      throw error;
+    }
+  }
 
+  static async getAllUsers() {
+    try {
+      const [rows] = await connection.query('SELECT * FROM usuarios');
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getUserByName({username}) {
+    try {
+      const [users] = await connection.query(
+        'SELECT * FROM usuarios WHERE nombre = ?;',
+        [username]
+      );
+
+      return users.length > 0 ? users[0] : null;
+    } catch (error) {
+      console.error('Error al obtener usuario por nombre:', error);
+      throw error;
+    }
+  }
+  
+  static async changePassword({ hashedPassword, username }) {
+    
+    console.log(hashedPassword, username)
+    
+    try {
+
+    await connection.query('UPDATE usuarios SET password = ? WHERE nombre = ?', [hashedPassword, username]);
+
+    } catch (error) {
+      console.error('Error al cambiar la contraseña:', error);
+      throw error;
+    }
+  }
+
+  static async deleteUser ({ id }) {
+    try {
+      await connection.query(
+        'DELETE FROM usuarios WHERE id = ?;',
+        [id]
+      );
+      return true;
+    } catch (error) {
+      console.error('Error al eliminar el registro:', error);
+      return false;
+    }
+  }
 }
