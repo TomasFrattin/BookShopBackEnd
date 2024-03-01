@@ -9,25 +9,11 @@ const config = {
 };
 const connection = await mysql.createConnection(config);
 
-async function getAll({ genre }) {
-  if (genre) {
-    const lowerCaseGenre = genre.toLowerCase();
-
-    const [genres] = await connection.query(
-      "SELECT id, name FROM genre WHERE LOWER(name) = ?;",
-      [lowerCaseGenre]
-    );
-
-    if (genres.length === 0) return [];
-
-    const [{ id }] = genres;
-
-    return [];
-  }
-
+async function getAll() {
   const [sales] = await connection.query(
-    "SELECT firstName, lastName, address, streetNumber, city, province, BIN_TO_UUID(id) id FROM sale;"
+    "SELECT firstName, lastName, address, streetNumber, city, fechaRegistro, province, BIN_TO_UUID(id) id FROM sale;"
   );
+
   return sales;
 }
 

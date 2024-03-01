@@ -9,29 +9,9 @@ const config = {
 };
 const connection = await mysql.createConnection(config);
 
-async function getAll({ genre }) {
-  if (genre) {
-    const lowerCaseGenre = genre.toLowerCase();
-
-    const [genres] = await connection.query(
-      "SELECT id, name FROM genre WHERE LOWER(name) = ?;",
-      [lowerCaseGenre]
-    );
-
-    if (genres.length === 0) return [];
-
-    const [{ id }] = genres;
-
-    const [books] = await connection.query(
-      "SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id FROM book WHERE genreId = ?;",
-      [id]
-    );
-
-    return books;
-  }
-
+async function getAll() {
   const [books] = await connection.query(
-    "SELECT title, year, author, price, image, rate, stock,  BIN_TO_UUID(id) id FROM book;"
+    "SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id FROM book;"
   );
 
   return books;
@@ -51,7 +31,7 @@ async function getById({ id }) {
 
 async function create({ input }) {
   const {
-    genre: genreInput,
+    //genre: genreInput,
     title,
     year,
     author,
@@ -71,8 +51,8 @@ async function create({ input }) {
       [title, year, author, price, image, rate, stock]
     );
   } catch (error) {
-    console.error("Error al crear la venta:", error);
-    throw new Error("Error al crear la venta");
+    console.error("Error al crear el libro:", error);
+    throw new Error("Error al crear el libro");
   }
 
   const [books] = await connection.query(

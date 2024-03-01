@@ -1,8 +1,7 @@
 import { SaleModel } from "../models/mysql/sale.js";
 
 async function getAll(req, res) {
-  const { genre } = req.query;
-  const sales = await SaleModel.getAll({ genre });
+  const sales = await SaleModel.getAll();
   res.json(sales);
 }
 

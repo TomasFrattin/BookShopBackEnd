@@ -2,8 +2,7 @@ import { BookModel } from "../models/mysql/book.js";
 import { validateBook, validatePartialBook } from "../schemas/books.js";
 
 async function getAll(req, res) {
-  const { genre } = req.query;
-  const books = await BookModel.getAll({ genre });
+  const books = await BookModel.getAll();
   res.json(books);
 }
 

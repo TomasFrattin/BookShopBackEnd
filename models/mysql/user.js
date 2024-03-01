@@ -9,7 +9,9 @@ const config = {
 };
 const connection = await mysql.createConnection(config);
 
-async function createUser({ username, hashedPassword }) {
+async function createUser({ username, hashedPassword }) {  
+  console.log(username, hashedPassword);
+  
   try {
     const [result] = await connection.query(
       "INSERT INTO usuarios (nombre, password) VALUES (?, ?)",
