@@ -3,8 +3,17 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 async function createUser(req, res) {
-  const { username, password } = req.body;
-  console.log(username, password);
+  const {
+    username,
+    password,
+    firstName,
+    lastName,
+    phoneNumber,
+    address,
+    city,
+    province,
+  } = req.body;
+
   try {
     const existingUser = await UserModel.getUserByName({ username });
 
@@ -16,11 +25,20 @@ async function createUser(req, res) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userId = await UserModel.createUser({ username, hashedPassword });
+    
+    await UserModel.createUser({
+      username,
+      hashedPassword,
+      firstName,
+      lastName,
+      phoneNumber,
+      address,
+      city,
+      province,
+    });
 
     res.json({
       msg: "Usuario creado exitosamente",
-      userId: userId,
     });
   } catch (error) {
     console.error(error);

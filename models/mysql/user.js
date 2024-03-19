@@ -9,15 +9,13 @@ const config = {
 };
 const connection = await mysql.createConnection(config);
 
-async function createUser({ username, hashedPassword }) {  
-  console.log(username, hashedPassword);
-  
+async function createUser({ username, hashedPassword, firstName, lastName, phoneNumber, address, city, province }) {  
+
   try {
     const [result] = await connection.query(
-      "INSERT INTO usuarios (nombre, password) VALUES (?, ?)",
-      [username, hashedPassword]
+      "INSERT INTO usuarios (username, password, firstName, lastName, address, city, province) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [username, hashedPassword, firstName, lastName, phoneNumber, address, city, province]
     );
-    return result.insertId;
   } catch (error) {
     throw error;
   }
@@ -35,7 +33,7 @@ async function getAllUsers() {
 async function getUserByName({ username }) {
   try {
     const [users] = await connection.query(
-      "SELECT * FROM usuarios WHERE nombre = ?;",
+      "SELECT * FROM usuarios WHERE username = ?;",
       [username]
     );
 
