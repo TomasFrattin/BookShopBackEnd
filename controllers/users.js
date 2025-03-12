@@ -11,7 +11,7 @@ async function createUser(req, res) {
     address,
     city,
     province,
-    rol, // Obtén el rol desde el cuerpo de la solicitud
+    rol,
   } = req.body;
 
   try {
@@ -33,7 +33,7 @@ async function createUser(req, res) {
       address,
       city,
       province,
-      rol, // Pasa el rol al modelo
+      rol,
     });
 
     res.json({
@@ -108,7 +108,7 @@ async function loginUser(req, res) {
     };
 
     const token = jwt.sign(tokenPayload, process.env.SECRET_KEY, {
-      expiresIn: "2h", // Token válido por 2 horas
+      expiresIn: "2h",
     });
 
     res.json({

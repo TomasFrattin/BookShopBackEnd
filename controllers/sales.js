@@ -18,7 +18,6 @@ async function createSale(req, res) {
   } catch (error) {
     console.error("Error en el controlador:", error);
 
-    // Verifica si el error tiene un status personalizado
     if (error.status) {
       return res.status(error.status).json({ error: error.message });
     }

@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL") // Usando la URL desde el archivo .env
+  url      = env("DATABASE_URL")
 }
 
 model Usuario {
@@ -22,7 +22,7 @@ model Usuario {
 
 
 model Sale {
-  id            String    @id @default(uuid()) @db.VarChar(36) // UUID como String
+  id            String    @id @default(uuid()) @db.VarChar(36)
   username      String
   totalAmount   Float
   fechaRegistro DateTime  @db.DateTime
@@ -42,7 +42,7 @@ model SaleBook {
 }
 
 model Book {
-  id          String   @id @default(uuid()) @db.VarChar(36)  // UUID como String
+  id          String   @id @default(uuid()) @db.VarChar(36)
   title       String
   year        Int
   author      String
@@ -51,7 +51,7 @@ model Book {
   rate        Float
   stock       Int
   genre       String
-  salesBooks  SaleBook[]  // Relación con SaleBook
+  salesBooks  SaleBook[]
 }
 
 

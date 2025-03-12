@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function getAll() {
   try {
-    return await prisma.book.findMany();  // Usamos Prisma para obtener todos los libros
+    return await prisma.book.findMany(); 
   } catch (error) {
     console.error("Error al obtener todos los libros:", error);
     throw new Error("Error al obtener todos los libros");
@@ -15,7 +15,7 @@ async function getById({ id }) {
   try {
     return await prisma.book.findUnique({
       where: {
-        id,  // Buscamos el libro por su ID (que es UUID en este caso)
+        id,
       },
     });
   } catch (error) {
@@ -55,7 +55,7 @@ async function deleteBook({ id }) {
       },
     });
 
-    return true;  // Si el libro se elimina exitosamente
+    return true; 
   } catch (error) {
     console.error("Error al eliminar el libro:", error);
     return false;
@@ -69,7 +69,7 @@ async function updatePrice({ id, input }) {
     const updatedBook = await prisma.book.update({
       where: { id },
       data: {
-        price: parseFloat(price),  // Convertir el precio a Float
+        price: parseFloat(price),
       },
     });
     return updatedBook;
@@ -86,7 +86,7 @@ async function updateStock({ id, input }) {
     const updatedBook = await prisma.book.update({
       where: { id },
       data: {
-        stock: parseInt(stock, 10),  // Convertir el stock a Integer
+        stock: parseInt(stock, 10),
       },
     });
     return updatedBook;

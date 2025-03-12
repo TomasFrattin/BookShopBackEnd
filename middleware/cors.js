@@ -16,5 +16,5 @@ export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) =>
       }
       return callback(new Error("Not allowed by CORS"));
     },
-    credentials: true, // 🔥 Permitir envío de cookies en solicitudes cross-origin
+    credentials: true,
   });

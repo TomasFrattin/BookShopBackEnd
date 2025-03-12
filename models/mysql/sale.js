@@ -3,7 +3,7 @@ import prisma from './prismaClient.js';
 async function getAll() {
   return await prisma.sale.findMany({
     include: {
-      books: true,  // Incluir los libros relacionados en la venta
+      books: true, 
     },
   });
 }
@@ -25,7 +25,6 @@ async function createSale({ input }) {
   }
 
   try {
-    // Buscar el usuario por su `username`
     const usuario = await prisma.usuario.findUnique({
       where: { username },
     });
@@ -34,14 +33,13 @@ async function createSale({ input }) {
       throw new Error(`Usuario con username '${username}' no encontrado`);
     }
 
-    // Crear la venta asociada al usuario
     const sale = await prisma.sale.create({
       data: {
         username,
-        totalAmount: parseFloat(totalAmount), // Convertir a número si viene como string
+        totalAmount: parseFloat(totalAmount),
         fechaRegistro: new Date(),
         usuario: {
-          connect: { id: usuario.id }, // Conectar la venta al usuario existente
+          connect: { id: usuario.id }, 
         },
         books: {
           create: books.map(book => ({
@@ -56,7 +54,6 @@ async function createSale({ input }) {
       },
     });
 
-    // Actualizar stock de los libros
     for (const book of books) {
       const { bookId, quantity } = book;
       const bookToUpdate = await prisma.book.findUnique({

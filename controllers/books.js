@@ -26,7 +26,7 @@ async function getById(req, res) {
 }
 
 async function create(req, res) {
-  const result = validateBook(req.body);  // Asegúrate de que la validación se haga correctamente
+  const result = validateBook(req.body);
 
   if (!result.success) {
     return res.status(400).json({ error: result.error.message });
@@ -64,7 +64,6 @@ async function updatePrice(req, res) {
   const { input } = req.body;
 
   try {
-    // Asegúrate de que 'input.price' es un número y no una cadena
     const updatedBook = await BookModel.updatePrice({ id, input: { price: parseFloat(input.price) } });
     res.status(200).json(updatedBook);
   } catch (error) {
@@ -78,7 +77,6 @@ async function updateStock(req, res) {
   const { input } = req.body;
 
   try {
-    // Asegúrate de que 'input.stock' es un número y no una cadena
     const updatedBook = await BookModel.updateStock({ id, input: { stock: parseInt(input.stock, 10) } });
     res.status(200).json(updatedBook);
   } catch (error) {

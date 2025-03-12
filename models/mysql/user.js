@@ -11,7 +11,7 @@ async function createUser({ username, hashedPassword, firstName, lastName, addre
         address,
         city,
         province,
-        rol,  // Asegúrate de incluir el rol
+        rol, 
       },
     });
     return user;

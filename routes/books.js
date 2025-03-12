@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import { BookController } from '../controllers/books.js';
-import { verifyToken } from '../middleware/auth.js'; // Importamos el middleware
+import { verifyToken } from '../middleware/auth.js';
 
 export const booksRouter = Router();
 
-// Rutas protegidas con verificación de token
 booksRouter.get('/', BookController.getAll);
 booksRouter.post('/', verifyToken, BookController.create);
 
