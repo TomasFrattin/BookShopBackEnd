@@ -1,87 +1,83 @@
-import mysql from "mysql2/promise";
-
-const config = {
-  host: "localhost",
-  user: "root",
-  port: 3306,
-  password: "root",
-  database: "bookshopdb",
-};
-const connection = await mysql.createConnection(config);
+import prisma from './prismaClient.js';
 
 async function getAll() {
-  const [sales] = await connection.query(
-    "SELECT firstName, lastName, address, streetNumber, city, fechaRegistro, province, BIN_TO_UUID(id) id FROM sale;"
-  );
-
-  return sales;
+  return await prisma.sale.findMany({
+    include: {
+      books: true,  // Incluir los libros relacionados en la venta
+    },
+  });
 }
 
 async function createSale({ input }) {
-  const {
-    firstName,
-    lastName,
-    address,
-    streetNumber,
-    city,
-    province,
-    books,
-    totalAmount,
-  } = input;
+  const { username, books, totalAmount } = input;
 
-  const [uuidResult] = await connection.query("SELECT UUID() uuid;");
-  const [{ uuid }] = uuidResult;
+  for (const book of books) {
+    const { bookId, quantity } = book;
+
+    const bookInfo = await prisma.book.findUnique({
+      where: { id: bookId },
+      select: { stock: true }
+    });
+
+    if (!bookInfo || bookInfo.stock < quantity) {
+      throw { status: 400, message: `Stock insuficiente para el libro con ID ${bookId}` };
+    }
+  }
 
   try {
-    await connection.query(
-      `INSERT INTO sale (id, firstName, lastName, address, streetNumber, city, province, totalAmount, fechaRegistro)
-       VALUES (UUID_TO_BIN("${uuid}"), ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP);`,
-      [firstName, lastName, address, streetNumber, city, province, totalAmount]
-    );
+    // Buscar el usuario por su `username`
+    const usuario = await prisma.usuario.findUnique({
+      where: { username },
+    });
 
+    if (!usuario) {
+      throw new Error(`Usuario con username '${username}' no encontrado`);
+    }
+
+    // Crear la venta asociada al usuario
+    const sale = await prisma.sale.create({
+      data: {
+        username,
+        totalAmount: parseFloat(totalAmount), // Convertir a número si viene como string
+        fechaRegistro: new Date(),
+        usuario: {
+          connect: { id: usuario.id }, // Conectar la venta al usuario existente
+        },
+        books: {
+          create: books.map(book => ({
+            bookId: book.bookId,
+            quantity: book.quantity,
+            price: book.price,
+          })),
+        },
+      },
+      include: {
+        books: true,
+      },
+    });
+
+    // Actualizar stock de los libros
     for (const book of books) {
-      const { bookId, quantity, price } = book;
+      const { bookId, quantity } = book;
+      const bookToUpdate = await prisma.book.findUnique({
+        where: { id: bookId },
+      });
 
-      await connection.query(
-        `INSERT INTO sale_books (sale_id, book_id, quantity, price)
-           VALUES (UUID_TO_BIN("${uuid}"), UUID_TO_BIN("${bookId}"), ?, ?);`,
-        [quantity, price]
-      );
-
-      const [bookInfo] = await connection.query(
-        `SELECT stock FROM book WHERE id = UUID_TO_BIN(?);`,
-        [bookId]
-      );
-
-      if (bookInfo.length > 0) {
-        const currentStock = bookInfo[0].stock;
-
-        if (currentStock >= quantity) {
-          await connection.query(
-            `UPDATE book SET stock = stock - ? WHERE id = UUID_TO_BIN(?);`,
-            [quantity, bookId]
-          );
-        } else {
-          throw new Error(
-            `No hay suficiente stock para el libro con ID ${bookId}`
-          );
-        }
+      if (bookToUpdate && bookToUpdate.stock >= quantity) {
+        await prisma.book.update({
+          where: { id: bookId },
+          data: { stock: bookToUpdate.stock - quantity },
+        });
       } else {
-        throw new Error(`No se encontró el libro con ID ${bookId}`);
+        throw new Error(`Stock insuficiente para el libro con ID ${bookId}`);
       }
     }
+
+    return sale;
   } catch (error) {
     console.error("Error al crear la venta:", error);
     throw new Error("Error al crear la venta");
   }
-
-  const [sales] = await connection.query(
-    `SELECT BIN_TO_UUID(id) as id, firstName, lastName, address, streetNumber, city, province
-      FROM sale WHERE id = UUID_TO_BIN(?);`,
-    [uuid]
-  );
-
-  return sales[0];
 }
 
 export const SaleModel = {

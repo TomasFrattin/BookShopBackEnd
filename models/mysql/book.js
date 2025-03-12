@@ -1,75 +1,63 @@
-import mysql from "mysql2/promise";
+import { PrismaClient } from '@prisma/client';
 
-const config = {
-  host: "localhost",
-  user: "root",
-  port: 3306,
-  password: "root",
-  database: "bookshopdb",
-};
-const connection = await mysql.createConnection(config);
+const prisma = new PrismaClient();
 
 async function getAll() {
-  const [books] = await connection.query(
-    "SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id FROM book;"
-  );
-
-  return books;
+  try {
+    return await prisma.book.findMany();  // Usamos Prisma para obtener todos los libros
+  } catch (error) {
+    console.error("Error al obtener todos los libros:", error);
+    throw new Error("Error al obtener todos los libros");
+  }
 }
 
 async function getById({ id }) {
-  const [books] = await connection.query(
-    `SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id 
-      FROM book WHERE id = UUID_TO_BIN(?);`,
-    [id]
-  );
-
-  if (books.length === 0) return null;
-
-  return books[0];
+  try {
+    return await prisma.book.findUnique({
+      where: {
+        id,  // Buscamos el libro por su ID (que es UUID en este caso)
+      },
+    });
+  } catch (error) {
+    console.error("Error al obtener el libro por ID:", error);
+    throw new Error("Error al obtener el libro por ID");
+  }
 }
 
 async function create({ input }) {
-  const {
-    //genre: genreInput,
-    title,
-    year,
-    author,
-    price,
-    rate,
-    image,
-    stock,
-  } = input;
-
-  const [uuidResult] = await connection.query("SELECT UUID() uuid;");
-  const [{ uuid }] = uuidResult;
+  const { title, year, author, price, rate, image, stock, genre } = input;
 
   try {
-    await connection.query(
-      `INSERT INTO book (id, title, year, author, price, image, rate, stock)
-          VALUES (UUID_TO_BIN("${uuid}"), ?, ?, ?, ?, ?, ?, ?);`,
-      [title, year, author, price, image, rate, stock]
-    );
+    const newBook = await prisma.book.create({
+      data: {
+        title,
+        year,
+        author,
+        price,
+        rate,
+        image,
+        stock,
+        genre,
+      },
+    });
+    return newBook;
   } catch (error) {
     console.error("Error al crear el libro:", error);
     throw new Error("Error al crear el libro");
   }
-
-  const [books] = await connection.query(
-    `SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id
-        FROM book WHERE id = UUID_TO_BIN(?);`,
-    [uuid]
-  );
-
-  return books[0];
 }
 
 async function deleteBook({ id }) {
   try {
-    await connection.query("DELETE FROM book WHERE id = UUID_TO_BIN(?);", [id]);
-    return true;
+    const deletedBook = await prisma.book.delete({
+      where: {
+        id,
+      },
+    });
+
+    return true;  // Si el libro se elimina exitosamente
   } catch (error) {
-    console.error("Error al eliminar el registro:", error);
+    console.error("Error al eliminar el libro:", error);
     return false;
   }
 }
@@ -78,80 +66,60 @@ async function updatePrice({ id, input }) {
   const { price } = input;
 
   try {
-    await connection.query(
-      `UPDATE book
-         SET price = ?
-         WHERE id = UUID_TO_BIN(?);`,
-      [price, id]
-    );
-  } catch (e) {
+    const updatedBook = await prisma.book.update({
+      where: { id },
+      data: {
+        price: parseFloat(price),  // Convertir el precio a Float
+      },
+    });
+    return updatedBook;
+  } catch (error) {
     throw new Error("Error al actualizar el precio del libro");
   }
-
-  const [updatedBook] = await connection.query(
-    `SELECT title, year, author, price, image, rate, BIN_TO_UUID(id) id
-       FROM book WHERE id = UUID_TO_BIN(?);`,
-    [id]
-  );
-
-  return updatedBook[0];
 }
+
 
 async function updateStock({ id, input }) {
   const { stock } = input;
 
   try {
-    await connection.query(
-      `UPDATE book
-         SET stock = ?
-         WHERE id = UUID_TO_BIN(?);`,
-      [stock, id]
-    );
-  } catch (e) {
-    console.error("Error al actualizar el stock del libro:", e);
+    const updatedBook = await prisma.book.update({
+      where: { id },
+      data: {
+        stock: parseInt(stock, 10),  // Convertir el stock a Integer
+      },
+    });
+    return updatedBook;
+  } catch (error) {
     throw new Error("Error al actualizar el stock del libro");
   }
-
-  const [updatedBook] = await connection.query(
-    `SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id
-       FROM book WHERE id = UUID_TO_BIN(?);`,
-    [id]
-  );
-
-  return updatedBook[0];
 }
+
 
 async function decreaseStock({ bookId, quantity }) {
   try {
-    const [book] = await connection.query(
-      `SELECT stock FROM book WHERE id = UUID_TO_BIN(?);`,
-      [bookId]
-    );
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
+    });
 
-    if (book.length === 0) {
+    if (!book) {
       throw new Error("Libro no encontrado");
     }
 
-    const currentStock = book[0].stock;
+    const currentStock = book.stock;
 
     if (currentStock < quantity) {
       throw new Error("No hay suficientes unidades disponibles en stock.");
     }
 
-    await connection.query(
-      `UPDATE book SET stock = ? WHERE id = UUID_TO_BIN(?);`,
-      [currentStock - quantity, bookId]
-    );
+    const updatedBook = await prisma.book.update({
+      where: { id: bookId },
+      data: { stock: currentStock - quantity },
+    });
 
-    const [updatedBook] = await connection.query(
-      `SELECT title, year, author, price, image, rate, stock, BIN_TO_UUID(id) id
-       FROM book WHERE id = UUID_TO_BIN(?);`,
-      [bookId]
-    );
-
-    return updatedBook[0];
+    return updatedBook;
   } catch (e) {
-    throw new Error(`Error al actualizar el stock del libro: ${e.message}`);
+    throw new Error(`Error al disminuir el stock del libro: ${e.message}`);
   }
 }
 
@@ -163,4 +131,4 @@ export const BookModel = {
   updatePrice,
   updateStock,
   decreaseStock,
-}
+};

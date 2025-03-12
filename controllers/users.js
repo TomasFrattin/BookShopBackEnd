@@ -8,16 +8,15 @@ async function createUser(req, res) {
     password,
     firstName,
     lastName,
-    phoneNumber,
     address,
     city,
     province,
+    rol, // Obtén el rol desde el cuerpo de la solicitud
   } = req.body;
 
   try {
     const existingUser = await UserModel.getUserByName({ username });
 
-    console.log(existingUser);
     if (existingUser) {
       return res
         .status(400)
@@ -25,16 +24,16 @@ async function createUser(req, res) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     await UserModel.createUser({
       username,
       hashedPassword,
       firstName,
       lastName,
-      phoneNumber,
       address,
       city,
       province,
+      rol, // Pasa el rol al modelo
     });
 
     res.json({
@@ -73,9 +72,9 @@ async function getUserByName(req, res) {
 }
 
 async function deleteUser(req, res) {
-  const { id } = req.params;
+  const { username } = req.params;
   try {
-    const deleted = await UserModel.deleteUser({ id });
+    const deleted = await UserModel.deleteUser({ username });
 
     if (deleted) {
       res.json({ msg: "Usuario eliminado exitosamente" });
@@ -99,23 +98,24 @@ async function loginUser(req, res) {
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
-
     if (!passwordMatch) {
       return res.status(401).json({ error: "Credenciales incorrectas" });
     }
 
-    const token = jwt.sign(
-      {
-        username: user.role,
-      },
-      process.env.SECRET_KEY || "pepito123"
-    );
+    const tokenPayload = {
+      username: user.username,
+      rol: user.rol,
+    };
+
+    const token = jwt.sign(tokenPayload, process.env.SECRET_KEY, {
+      expiresIn: "2h", // Token válido por 2 horas
+    });
 
     res.json({
-      token,
       message: "Inicio de sesión exitoso",
-      role: user.rol,
-      username: user.nombre,
+      token: token,
+      rol: user.rol,
+      username: user.username,
     });
   } catch (error) {
     console.error("Error durante la autenticación:", error);
@@ -125,7 +125,7 @@ async function loginUser(req, res) {
 
 async function changePassword(req, res) {
   const { username, currentPassword, newPassword } = req.body;
-  console.log("Username:", username);
+  console.log("userName:", username);
   console.log("Current Password:", currentPassword);
   console.log("New Password:", newPassword);
 

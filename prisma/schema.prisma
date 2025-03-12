@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL") // Usando la URL desde el archivo .env
+}
+
+model Usuario {
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  password    String
+  firstName   String
+  lastName    String
+  address     String
+  city        String
+  province    String
+  rol         String   @default("user")
+  sales       Sale[]   @relation("UserSales")
+}
+
+
+model Sale {
+  id            String    @id @default(uuid()) @db.VarChar(36) // UUID como String
+  username      String
+  totalAmount   Float
+  fechaRegistro DateTime  @db.DateTime
+  books         SaleBook[]
+  usuario       Usuario   @relation("UserSales", fields: [usuarioId], references: [id])
+  usuarioId     Int
+}
+
+model SaleBook {
+  id        Int    @id @default(autoincrement())
+  saleId    String
+  bookId    String
+  quantity  Int
+  price     Float
+  sale      Sale   @relation(fields: [saleId], references: [id])
+  book      Book   @relation(fields: [bookId], references: [id])
+}
+
+model Book {
+  id          String   @id @default(uuid()) @db.VarChar(36)  // UUID como String
+  title       String
+  year        Int
+  author      String
+  price       Float
+  image       String
+  rate        Float
+  stock       Int
+  genre       String
+  salesBooks  SaleBook[]  // Relación con SaleBook
+}
+
+

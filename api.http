@@ -60,11 +60,13 @@ Content-Type: application/json
   }
 
 ### Recuperar todos los usuarios
-GET http://localhost:1234/users
+GET http://localhost:1234/users/11
 
 ### Recuperar un usuario por nombre
 GET http://localhost:1234/users/tomas
 
+### Elimina un Usuario
+DELETE http://localhost:1234/users/jaja
 
 ### Recuperar todas las ventas
 GET http://localhost:1234/sales

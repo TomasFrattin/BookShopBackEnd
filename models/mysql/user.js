@@ -1,70 +1,72 @@
-import mysql from "mysql2/promise";
+import prisma from './prismaClient.js';
 
-const config = {
-  host: "localhost",
-  user: "root",
-  port: 3306,
-  password: "root",
-  database: "bookshopdb",
-};
-const connection = await mysql.createConnection(config);
-
-async function createUser({ username, hashedPassword, firstName, lastName, phoneNumber, address, city, province }) {  
-
+async function createUser({ username, hashedPassword, firstName, lastName, address, city, province, rol = "user" }) {
   try {
-    const [result] = await connection.query(
-      "INSERT INTO usuarios (username, password, firstName, lastName, address, city, province) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [username, hashedPassword, firstName, lastName, phoneNumber, address, city, province]
-    );
+    const user = await prisma.usuario.create({
+      data: {
+        username,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        address,
+        city,
+        province,
+        rol,  // Asegúrate de incluir el rol
+      },
+    });
+    return user;
   } catch (error) {
     throw error;
   }
 }
+
 
 async function getAllUsers() {
   try {
-    const [rows] = await connection.query("SELECT * FROM usuarios");
-    return rows;
+    const users = await prisma.usuario.findMany();
+    return users;
   } catch (error) {
     throw error;
   }
 }
+
 
 async function getUserByName({ username }) {
   try {
-    const [users] = await connection.query(
-      "SELECT * FROM usuarios WHERE username = ?;",
-      [username]
-    );
-
-    return users.length > 0 ? users[0] : null;
+    const user = await prisma.usuario.findUnique({
+      where: { username },
+    });
+    return user;
   } catch (error) {
-    console.error("Error al obtener usuario por nombre:", error);
     throw error;
   }
 }
+
 
 async function changePassword({ hashedPassword, username }) {
   try {
-    await connection.query(
-      "UPDATE usuarios SET password = ? WHERE nombre = ?",
-      [hashedPassword, username]
-    );
+    const user = await prisma.usuario.update({
+      where: { username },
+      data: { password: hashedPassword },
+    });
+    return user;
   } catch (error) {
-    console.error("Error al cambiar la contraseña:", error);
     throw error;
   }
 }
 
-async function deleteUser({ id }) {
+
+async function deleteUser({ username }) {
   try {
-    await connection.query("DELETE FROM usuarios WHERE id = ?;", [id]);
-    return true;
+    const user = await prisma.usuario.delete({
+      where: { username },
+    });
+    return user;
   } catch (error) {
-    console.error("Error al eliminar el registro:", error);
-    return false;
+    throw error;
   }
 }
+
 
 export const UserModel = {
   createUser,
