@@ -6,6 +6,7 @@ const ACCEPTED_ORIGINS = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://books.com",
+  "https://book-shop-front-end-pied.vercel.app",
 ];
 
 export const corsMiddleware = ({ acceptedOrigins = ACCEPTED_ORIGINS } = {}) =>
