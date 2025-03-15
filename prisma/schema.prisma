@@ -17,7 +17,6 @@ model Usuario {
   city        String
   province    String
   rol         String   @default("user")
-  sales       Sale[]   @relation("UserSales")
 }
 
 
@@ -27,7 +26,6 @@ model Sale {
   totalAmount   Float
   fechaRegistro DateTime  @db.DateTime
   books         SaleBook[]
-  usuario       Usuario   @relation("UserSales", fields: [usuarioId], references: [id])
   usuarioId     Int
 }
 

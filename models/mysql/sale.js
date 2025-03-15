@@ -25,6 +25,7 @@ async function createSale({ input }) {
   }
 
   try {
+    // Buscar el usuario, pero sin conectar la venta con la tabla Usuario
     const usuario = await prisma.usuario.findUnique({
       where: { username },
     });
@@ -35,12 +36,10 @@ async function createSale({ input }) {
 
     const sale = await prisma.sale.create({
       data: {
-        username,
+        usuarioId: usuario.id,  // Guardamos solo el ID como dato
+        username,               // Guardamos el username como dato
         totalAmount: parseFloat(totalAmount),
         fechaRegistro: new Date(),
-        usuario: {
-          connect: { id: usuario.id }, 
-        },
         books: {
           create: books.map(book => ({
             bookId: book.bookId,
@@ -76,6 +75,7 @@ async function createSale({ input }) {
     throw new Error("Error al crear la venta");
   }
 }
+
 
 export const SaleModel = {
   getAll,
