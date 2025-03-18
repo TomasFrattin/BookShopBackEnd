@@ -55,12 +55,16 @@ async function deleteBook({ id }) {
       },
     });
 
-    return true; 
+    return true;
   } catch (error) {
-    console.error("Error al eliminar el libro:", error);
-    return false;
+    if (error.code === "P2003") {
+      throw new Error("CONFLICT_SALES");
+    }
+    throw error;
   }
 }
+
+
 
 async function updatePrice({ id, input }) {
   const { price } = input;

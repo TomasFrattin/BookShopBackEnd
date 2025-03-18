@@ -91,6 +91,10 @@ async function loginUser(req, res) {
   try {
     const { username, password } = req.body;
 
+    if (!username || !password) {
+      return res.status(400).json({ error: "Faltan parámetros requeridos" });
+    }
+    
     const user = await UserModel.getUserByName({ username });
 
     if (!user) {

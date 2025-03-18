@@ -55,9 +55,16 @@ async function deleteBook(req, res) {
     return res.json({ message: "Libro eliminado" });
   } catch (error) {
     console.error("Error al eliminar el libro:", error);
+
+    if (error.message === "CONFLICT_SALES") {
+      return res.status(409).json({ message: "No se puede eliminar el libro porque tiene ventas asociadas." });
+    }
+
     return res.status(500).json({ error: "Error al eliminar el libro" });
   }
 }
+
+
 
 async function updatePrice(req, res) {
   const { id } = req.params;

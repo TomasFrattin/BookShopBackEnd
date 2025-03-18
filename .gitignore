@@ -1,3 +1,11 @@
 .env
 api.http
 node_modules/
+usser.js
+
+# Configuración de Jest y Babel
+jest.config.js
+.babelrc
+
+# Carpeta de tests
+tests/
