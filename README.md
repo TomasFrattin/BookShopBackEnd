@@ -1,4 +1,4 @@
-# Proyecto - Eccommerce Librería
+# Proyecto - Ecommerce Librería - BackEnd
 ### Descripción
 Esta aplicación web facilita la compra y gestión de libros en una librería online. Los usuarios pueden registrarse, navegar por el catálogo, agregar productos al carrito y confirmar sus pedidos, enviando una notificación al dueño para su procesamiento. Por otro lado, el sistema incluye un panel administrativo donde se pueden gestionar libros y usuarios de manera eficiente. La plataforma cuenta con autenticación mediante tokens JWT, almacenamiento seguro de contraseñas y notificaciones a través de WhatsApp API, garantizando seguridad y escalabilidad en la experiencia de compra.
 
