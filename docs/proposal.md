@@ -14,7 +14,7 @@
 Ecommerce de libros que permite a los usuarios registrarse, explorar el catálogo, agregar libros al carrito y confirmar su compra, enviando así un mensaje al dueño de la librería para procesar el pedido. Además, cuenta con un apartado de administración donde se pueden realizar altas, bajas y modificaciones tanto de libros como de usuarios, facilitando la gestión de la tienda de manera eficiente e intuitiva.
 
 ### Modelo
-HACER EL DER
+![Diagrama DER](DER.png)
 
 ## Alcance Funcional
 
